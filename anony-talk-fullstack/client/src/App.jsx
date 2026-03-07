@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AuthPage from './pages/AuthPage';
 import Intro from './pages/Intro';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -17,28 +18,45 @@ import Community from './pages/Community';
 import Feed from './pages/Feed';
 import CreatePost from './pages/CreatePost';
 import SocialSpace from './pages/SocialSpace';
+import TeenSupport from './pages/TeenSupport';
+
+// ── Protected Route ───────────────────────────────────────────────────────────
+function Protected({ children }) {
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/auth" replace />;
+  return children;
+}
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Intro />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/profile/edit" element={<EditProfile />} />
-      <Route path="/profile" element={<ViewProfile />} />
-      <Route path="/bot" element={<Bot />} />
-      <Route path="/explore" element={<Explore />} />
-      <Route path="/motivation" element={<Motivation />} />
-      <Route path="/exercise" element={<Exercise />} />
-      <Route path="/stories" element={<Stories />} />
-      <Route path="/games" element={<Games />} />
-      <Route path="/anxiety" element={<Anxiety />} />
-      <Route path="/depression" element={<Depression />} />
-      <Route path="/relationship" element={<Relationship />} />
-      <Route path="/community" element={<Community />} />
-      <Route path="/feed" element={<Feed />} />
-      <Route path="/create-post" element={<CreatePost />} />
-      <Route path="/social" element={<SocialSpace />} />
+
+      {/* Public routes — AuthPage is the landing page */}
+      <Route path="/"      element={<AuthPage />} />
+      <Route path="/auth"  element={<AuthPage />} />
+      <Route path="/login" element={<AuthPage />} />
+
+      {/* All pages below are protected — login required */}
+      <Route path="/intro"             element={<Protected><Intro /></Protected>} />
+      <Route path="/dashboard"         element={<Protected><Dashboard /></Protected>} />
+      <Route path="/profile/edit"      element={<Protected><EditProfile /></Protected>} />
+      <Route path="/profile"           element={<Protected><ViewProfile /></Protected>} />
+      <Route path="/bot"               element={<Protected><Bot /></Protected>} />
+      <Route path="/explore"           element={<Protected><Explore /></Protected>} />
+      <Route path="/motivation"        element={<Protected><Motivation /></Protected>} />
+      <Route path="/exercise"          element={<Protected><Exercise /></Protected>} />
+      <Route path="/stories"           element={<Protected><Stories /></Protected>} />
+      <Route path="/games"             element={<Protected><Games /></Protected>} />
+      <Route path="/anxiety"           element={<Protected><Anxiety /></Protected>} />
+      <Route path="/depression"        element={<Protected><Depression /></Protected>} />
+      <Route path="/relationship"      element={<Protected><Relationship /></Protected>} />
+      <Route path="/community"         element={<Protected><Community /></Protected>} />
+      <Route path="/feed"              element={<Protected><Feed /></Protected>} />
+      <Route path="/create-post"       element={<Protected><CreatePost /></Protected>} />
+      <Route path="/social"            element={<Protected><SocialSpace /></Protected>} />
+      <Route path="/teen-space"        element={<Protected><TeenSupport /></Protected>} />
+      <Route path="/young-adult-space" element={<Protected><Dashboard /></Protected>} />
+
     </Routes>
   );
 }

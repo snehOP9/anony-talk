@@ -17,6 +17,7 @@ import Community from './pages/Community';
 import Feed from './pages/Feed';
 import CreatePost from './pages/CreatePost';
 import SocialSpace from './pages/SocialSpace';
+import TeenSupport from './pages/TeenSupport';
 
 // ── Protected Route ───────────────────────────────────────────────────────────
 // Checks localStorage for token — if not logged in, redirects to /auth
@@ -30,7 +31,7 @@ export default function App() {
   return (
     <Routes>
 
-      {/* Opening the website → shows auth page first */}
+      {/* Public routes — AuthPage is the landing page */}
       <Route path="/"      element={<AuthPage />} />
       <Route path="/auth"  element={<AuthPage />} />
       <Route path="/login" element={<AuthPage />} />
@@ -55,7 +56,7 @@ export default function App() {
       <Route path="/social"            element={<Protected><SocialSpace /></Protected>} />
 
       {/* Age-based redirect after login — both go to Dashboard for now */}
-      <Route path="/teen-space"        element={<Protected><Dashboard /></Protected>} />
+      <Route path="/teen-space"        element={<Protected><TeenSupport /></Protected>} />
       <Route path="/young-adult-space" element={<Protected><Dashboard /></Protected>} />
 
     </Routes>

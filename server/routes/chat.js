@@ -1,122 +1,158 @@
 const express = require('express');
 const router = express.Router();
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
-function geminiUrl() {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+const GEMINI_MODEL = 'gemini-2.5-flash-lite';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+function buildSystemPrompt(language) {
+  return `You are a compassionate, non-judgmental AI mental health companion for AnonyTalk, an anonymous support platform primarily used in India. Your role is to listen, validate feelings, and offer supportive guidance.
+
+Guidelines:
+- Be warm, empathetic, and supportive — never clinical or dismissive
+- Respond in ${language || 'English'} if the user writes in that language; otherwise respond in English
+- For crisis situations (self-harm, suicide), always provide Indian helplines: iCall: 9152987821, Vandrevala Foundation: 1860-2662-345 (24/7), AASRA: 9820466627
+- Do not diagnose or prescribe medication
+- Keep responses concise (3-5 sentences) unless the user needs more
+- Acknowledge cultural context relevant to India (family pressure, academic stress, arranged marriages, social stigma around mental health)
+- Encourage professional help when appropriate
+- Never share personal opinions on religion, politics, or social issues`;
 }
 
-// Chatbot responses - moved from client-side to server
-const chatbotResponses = {
-  "why do i feel sad all the time?": "Feeling sad all the time can be caused by various factors such as stress, hormonal imbalances, unresolved trauma, or depression. It's important to identify the root cause. Consider speaking to a trusted friend, therapist, or counselor for support.",
-  "why do i feel empty inside?": "Feeling empty inside may stem from emotional numbness, unresolved grief, depression, or disconnection from your emotions or purpose. It's important to explore these feelings with a therapist or trusted person.",
-  "what are the signs of depression?": "Common signs include persistent sadness, loss of interest in activities, changes in sleep/appetite, fatigue, feelings of worthlessness, difficulty concentrating, and thoughts of death or suicide. If these persist for weeks, seek professional help.",
-  "why do i cry for no reason?": "Crying 'for no reason' can result from built-up stress, hormonal changes, or subconscious emotional triggers. It's a natural release—but if it happens frequently, consider talking to a therapist.",
-  "why do i feel tired even after sleeping?": "Chronic fatigue despite sleep could indicate poor sleep quality, depression, anxiety, or physical health issues like anemia. Track your habits and consult a healthcare provider.",
-  "is it normal to feel hopeless?": "Occasional hopelessness is normal, but if it lingers, it may signal depression. Reach out to a mental health professional or support network.",
-  "why do i feel like i'm not good enough?": "This often ties to low self-esteem, past criticism, or societal pressures. Practice self-compassion and challenge negative thoughts. Therapy can help rebuild self-worth.",
-  "why do i overthink everything?": "Overthinking may stem from anxiety, fear of failure, or perfectionism. Techniques like mindfulness, journaling, or cognitive-behavioral strategies can help break the cycle.",
-  "how do i stop feeling numb?": "Numbness can be a coping mechanism for overwhelm. Grounding exercises, creative expression, or therapy can help you reconnect with emotions safely.",
-  "why do i feel like no one understands me?": "Feeling misunderstood may arise from communication gaps or loneliness. Opening up to empathetic listeners or joining supportive communities can foster connection.",
-  "why do i feel lonely even around people?": "Loneliness in crowds often reflects a lack of meaningful connection. Focus on deepening relationships or engaging in activities that align with your values.",
-  "how do i deal with loneliness?": "Combat loneliness by reaching out to loved ones, joining clubs/volunteer groups, or exploring hobbies. Therapy can also help address underlying social anxieties.",
-  "how do i deal with anxiety?": "Practice deep breathing, grounding techniques (e.g., 5-4-3-2-1 method), or challenge anxious thoughts with logic. Therapy can also provide long-term tools.",
-  "can i vent to you?": "Absolutely. I'm here to listen without judgment. Venting can help process emotions—feel free to share whatever's on your mind.",
-  "will you judge me if i tell you something?": "No judgment here. This is a safe space to express yourself openly and honestly.",
-  "can i talk to you about my problems?": "Of course. I'm available 24/7 to help you navigate challenges or just lend an ear.",
-  "can you help me calm down?": "Try this: Inhale for 4 counts, hold for 4, exhale for 6. Repeat. Visualize a peaceful place—I'll guide you through it if you'd like.",
-  "how do i get over a breakup?": "Allow yourself to grieve, lean on support systems, and focus on self-care. Time and new experiences will gradually ease the pain.",
-  "how do i stop feeling lazy?": "'Laziness' is often fatigue or lack of motivation. Start with tiny tasks to build momentum, and reward progress.",
-  "can you tell me a joke?": "Why don't skeletons fight each other? They don't have the *guts*! 😄",
-  "what's the meaning of life?": "It's subjective! Philosophers say it's about happiness, love, or purpose—what feels meaningful to *you*?",
-  "can we play a game?": "Sure! Let's play trivia: What has keys but can't open locks? (Answer: A piano!)",
-  "how do i gain more confidence?": "Start with small challenges, celebrate wins, and replace self-doubt with affirmations like 'I am capable.'",
-  "what should i do when i feel overwhelmed?": "Pause, take deep breaths, and break the situation into smaller tasks. Prioritize what's urgent and delegate or postpone the rest.",
-  "how do i stop procrastinating?": "Procrastination links to fear of failure or overwhelm. Break tasks into steps and start with the easiest one.",
-  "how do i become a better person?": "Reflect on values, practice empathy, and learn from mistakes. Growth is a lifelong journey—be patient with yourself.",
-};
+// Hardcoded fallback responses
+const chatbotResponses = new Map([
+  // Depression
+  ['feel sad', "I'm really sorry you're feeling this way. Sadness can feel overwhelming, but you don't have to face it alone. Can you tell me more about what's been going on?"],
+  ['depressed', "Depression is real and it's hard. What you're feeling is valid. Many people go through this, and with support, things can get better. Would you like to talk about what's weighing on you?"],
+  ['no motivation', "Losing motivation can be exhausting. Sometimes it's our mind's way of asking for rest or change. What does a typical day look like for you lately?"],
+  ['empty inside', "Feeling empty is one of the hardest emotions to carry. I hear you. Would you like to talk about when this feeling started or what might be behind it?"],
+  ['worthless', "You are not worthless — even if it feels that way right now. These feelings often come from pain, not truth. I'd love to understand what's been making you feel this way."],
+  ['hopeless', "Feeling hopeless can make everything seem pointless, but these feelings can change. You reached out today, and that matters. What's been happening in your life recently?"],
+  ['crying', "It's okay to cry — sometimes we need to let it out. You're safe here. What's been on your mind or heart?"],
+  ['nothing matters', "When nothing feels like it matters, it's often a sign that something important to you has been lost or hurt. Can you share more about what's going on?"],
 
-function findFallbackResponse(message) {
-  const lowerMsg = message.toLowerCase().trim();
+  // Anxiety
+  ['anxious', "Anxiety can feel like your mind won't stop racing. Take a slow breath with me. Can you tell me what's making you feel anxious?"],
+  ['anxiety', "I understand — anxiety can be really overwhelming. You're not alone in this. What's triggering these feelings right now?"],
+  ['panic', "Panic attacks are terrifying but they do pass. Try breathing in for 4 counts, hold for 4, out for 4. Are you somewhere safe right now?"],
+  ['panic attack', "You're going to be okay. Focus on 5 things you can see, 4 you can touch, 3 you can hear. Breathe slowly. I'm here with you."],
+  ['worried', "Worry can take over our whole mind sometimes. What's been on your mind the most? Talking it through can help."],
+  ['scared', "It's okay to feel scared. Fear is a signal, not a verdict. Can you tell me what's frightening you?"],
+  ['overthinking', "Overthinking is exhausting — your mind keeps looping without finding answers. Let's slow it down together. What thought keeps coming back to you?"],
+  ['stress', "Stress can build up silently until it's too much. You're right to acknowledge it. What's putting the most pressure on you right now?"],
+  ['stressed', "It sounds like you're carrying a lot. Stress has a way of piling up. What's the biggest thing weighing on you today?"],
 
-  if (chatbotResponses[lowerMsg]) {
-    return chatbotResponses[lowerMsg];
+  // Crisis / Self-harm
+  ['suicidal', "I'm really concerned about you right now, and I'm glad you're talking to me. Please reach out immediately: iCall: 9152987821 | Vandrevala Foundation: 1860-2662-345 (24/7) | AASRA: 9820466627. You matter, and people want to help you."],
+  ['want to die', "I hear you, and I'm taking this seriously. Please contact iCall at 9152987821 or Vandrevala Foundation at 1860-2662-345 — they're available 24/7 and want to help. You don't have to face this alone."],
+  ['end my life', "Please don't do this alone. Call AASRA at 9820466627 or iCall at 9152987821 right now. You are worth fighting for. Can you tell me if you're safe right now?"],
+  ['hurt myself', "I'm worried about your safety. Please reach out to iCall (9152987821) or Vandrevala Foundation (1860-2662-345). Are you somewhere safe? Can you talk to someone near you?"],
+  ['self harm', "I care about your safety. Please talk to someone right now — iCall: 9152987821, Vandrevala Foundation: 1860-2662-345 (24/7). I'm also here to listen — what's brought you to this point?"],
+  ['kill myself', "Please reach out to a crisis line immediately: iCall: 9152987821 | AASRA: 9820466627 | Vandrevala: 1860-2662-345. I'm here with you. Are you safe right now?"],
+
+  // Relationships
+  ['breakup', "Breakups are genuinely painful — you're grieving someone who was part of your life. It's okay to feel devastated. How are you holding up?"],
+  ['heartbroken', "Heartbreak is one of the most real kinds of pain. Give yourself permission to grieve. What happened, if you'd like to share?"],
+  ['lonely', "Loneliness can feel incredibly isolating, even when people are around. You're not alone in feeling this way. What's been making you feel disconnected?"],
+  ['alone', "Feeling alone is painful. I'm here and I'm listening. What's going on in your life right now?"],
+  ['toxic relationship', "Recognizing toxicity takes courage. Your wellbeing matters. Can you tell me more about the situation? It helps to talk it through."],
+  ['abusive', "No one deserves abuse. Your safety and wellbeing come first. Would you like to talk about your situation and explore your options?"],
+  ['cheating', "Betrayal cuts deep. It's normal to feel a mix of hurt, anger, and confusion. What would help you most right now — to vent, to think through options, or just to be heard?"],
+  ['divorce', "Divorce is a major life transition, and it's natural to feel grief, relief, anger, or all at once. How are you processing everything?"],
+  ['fight with', "Conflict in relationships is stressful. What happened, and how are you feeling about it now?"],
+
+  // Family & Indian context
+  ['family pressure', "Family expectations in India can feel immense — especially around career, marriage, or lifestyle. You're not alone in feeling this weight. What's being expected of you?"],
+  ['parents', "It can be hard when parents don't understand or agree with your choices. Family relationships are complex. What's the situation at home?"],
+  ['arranged marriage', "Navigating arranged marriage expectations can feel overwhelming, especially if it conflicts with what you want. Can you share more about what you're going through?"],
+  ['academic pressure', "Academic pressure in India is intense — boards, entrance exams, college, placements. It can feel like your entire worth is tied to marks. That's not true. What are you facing?"],
+  ['exam', "Exam stress is real and valid. It's okay to feel overwhelmed. Let's talk about what you're facing — sometimes saying it out loud helps."],
+  ['job', "Career pressure and job stress can take a real toll on mental health. What's going on with your work situation?"],
+  ['career', "Career decisions carry so much weight, especially with family expectations. What's weighing on you about your career?"],
+
+  // Identity
+  ['identity', "Figuring out who you are is a profound and sometimes painful journey. What aspects of your identity are you exploring or struggling with?"],
+  ['lgbtq', "You deserve to be seen and accepted for who you are. In India, navigating identity can be especially hard. I'm here to listen without judgment. How are you doing?"],
+  ['coming out', "Coming out takes incredible courage, especially in a conservative environment. How are you feeling about it? Do you have support around you?"],
+  ['gender', "Questions around gender identity are deeply personal. I'm here to listen and support, not judge. What's on your mind?"],
+
+  // General wellbeing
+  ['sleep', "Sleep problems often go hand in hand with stress, anxiety, or depression. How long has this been going on, and what does your mind do when you try to sleep?"],
+  ['cant sleep', "Not being able to sleep makes everything harder. What's keeping you awake — racing thoughts, worry, or something else?"],
+  ['tired', "Feeling tired all the time — especially emotionally — is a sign your mind and body need care. What's been draining you?"],
+  ['exhausted', "Emotional exhaustion is real and serious. You deserve rest and support. What's been taking the most out of you?"],
+  ['burnout', "Burnout sneaks up quietly and then hits all at once. You've been pushing through for too long. What does your daily life look like right now?"],
+  ['no one understands', "Feeling misunderstood is deeply isolating. I want to understand — tell me more about what you're going through."],
+  ['cant talk to anyone', "It takes courage to reach out even here. I'm glad you did. You can say anything — this is a safe, anonymous space."],
+  ['help', "I'm here to help. What's going on? You can share as much or as little as you're comfortable with."],
+  ['not okay', "Thank you for being honest. It's okay to not be okay. Can you tell me more about what you're feeling right now?"],
+
+  // Positive / General chat
+  ['thank you', "You're very welcome. Remember, reaching out is always a sign of strength. I'm here whenever you need to talk."],
+  ['thanks', "Of course. Take care of yourself — you matter. Come back anytime you need to talk."],
+  ['hello', "Hi there! I'm your AnonyTalk companion. This is a safe, anonymous space. How are you feeling today?"],
+  ['hi', "Hello! I'm here to listen and support you. How are you doing today?"],
+  ['how are you', "I'm here and ready to listen to you! More importantly — how are *you* doing?"],
+]);
+
+function getFallbackResponse(message) {
+  const lower = message.toLowerCase();
+  for (const [keyword, response] of chatbotResponses) {
+    if (lower.includes(keyword)) return response;
   }
-
-  let bestMatch = null;
-  let bestScore = 0;
-
-  for (const key of Object.keys(chatbotResponses)) {
-    const words = key.split(' ');
-    const matchCount = words.filter((w) => lowerMsg.includes(w)).length;
-    const score = matchCount / words.length;
-    if (score > bestScore && score > 0.4) {
-      bestScore = score;
-      bestMatch = key;
-    }
-  }
-
-  if (bestMatch) {
-    return chatbotResponses[bestMatch];
-  }
-
-  return "I hear you. While I may not have the perfect answer, know that your feelings are valid. Would you like to talk more about what's on your mind?";
+  return "I hear you, and I'm here to listen. Can you tell me more about what's on your mind? This is a safe, anonymous space — you can share freely.";
 }
 
-// Chat endpoint - uses OpenAI live generation with fallback support.
 router.post('/', async (req, res) => {
-  const { message } = req.body;
-  if (!message) return res.status(400).json({ error: 'Message is required' });
+  const { message, language = 'English' } = req.body;
+
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({ error: 'Message is required.' });
+  }
+
+  if (!GEMINI_API_KEY) {
+    const response = getFallbackResponse(message);
+    return res.json({ response, source: 'fallback' });
+  }
 
   try {
-    if (!process.env.GEMINI_API_KEY) {
-      return res.json({
-        response: findFallbackResponse(message),
-        source: 'fallback',
-      });
-    }
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
-    const systemPrompt = 'You are a supportive mental wellness assistant on an anonymous platform called AnonyTalk. Be empathetic, practical, concise, and non-judgmental. Do not provide medical diagnosis. If the user mentions self-harm intent, encourage immediate professional help and emergency services.';
+    const body = {
+      system_instruction: {
+        parts: [{ text: buildSystemPrompt(language) }]
+      },
+      contents: [
+        { role: 'user', parts: [{ text: message }] }
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 300,
+      }
+    };
 
-    const apiRes = await fetch(geminiUrl(), {
+    const geminiRes = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ role: 'user', parts: [{ text: message }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 300,
-        },
-      }),
+      body: JSON.stringify(body),
     });
 
-    if (!apiRes.ok) {
-      const errorText = await apiRes.text();
-      console.error('Gemini API error:', errorText);
-      return res.json({
-        response: findFallbackResponse(message),
-        source: 'fallback',
-      });
+    if (!geminiRes.ok) {
+      const err = await geminiRes.json().catch(() => ({}));
+      console.error('Gemini API error:', err);
+      return res.json({ response: getFallbackResponse(message), source: 'fallback' });
     }
 
-    const data = await apiRes.json();
-    const response = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const data = await geminiRes.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!response) {
-      return res.json({
-        response: findFallbackResponse(message),
-        source: 'fallback',
-      });
+    if (!text) {
+      return res.json({ response: getFallbackResponse(message), source: 'fallback' });
     }
 
-    return res.json({ response, source: 'gemini' });
-  } catch (error) {
-    console.error('Chat route error:', error.message);
-    return res.json({
-      response: findFallbackResponse(message),
-      source: 'fallback',
-    });
+    res.json({ response: text.trim(), source: 'gemini' });
+  } catch (err) {
+    console.error('Chat route error:', err);
+    res.json({ response: getFallbackResponse(message), source: 'fallback' });
   }
 });
 

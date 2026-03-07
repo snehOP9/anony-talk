@@ -15,6 +15,7 @@ export default function Navbar() {
         <li><Link to="/explore" className={isActive('/explore')}>Explore</Link></li>
         <li><Link to="/bot" className={isActive('/bot')}>AI Chat</Link></li>
         <li><Link to="/feed" className={isActive('/feed')}>Community</Link></li>
+        <li><Link to="/teen-space" className={isActive('/teen-space')}>Teen Space</Link></li>
         <li><Link to="/profile" className={isActive('/profile')}>Profile</Link></li>
         {user ? (
           <>

@@ -46,5 +46,5 @@ export const updateChallenge = (userId, challengeId, page, completed) =>
   request('/mood/challenges', { method: 'POST', body: JSON.stringify({ userId, challengeId, page, completed }) });
 
 // Chat
-export const sendChatMessage = (message) =>
-  request('/chat', { method: 'POST', body: JSON.stringify({ message }) });
+export const sendChatMessage = (message, language = 'English') =>
+  request('/chat', { method: 'POST', body: JSON.stringify({ message, language }) });
