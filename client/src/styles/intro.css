@@ -65,6 +65,29 @@
   animation: heroReveal 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
 }
 
+.typewriter-line {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  min-height: 1.1em;
+}
+
+.type-cursor {
+  display: inline-block;
+  -webkit-text-fill-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  animation: cursorBlink 0.75s step-end infinite;
+  font-weight: 300;
+  margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 @keyframes heroReveal {
   from { opacity: 0; transform: translateY(30px); filter: blur(10px); }
   to { opacity: 1; transform: translateY(0); filter: blur(0); }

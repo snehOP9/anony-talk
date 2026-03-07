@@ -1,8 +1,38 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Particles from '../components/Particles';
 import '../styles/intro.css';
 
+const PHRASES = ['Your Story.', 'Your Voice.', 'Your Healing.', 'Your Journey.'];
+
+function useTypewriter(phrases, speed = 80, pause = 1800) {
+  const [displayed, setDisplayed] = useState('');
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = phrases[phraseIdx];
+    let timeout;
+    if (!deleting && charIdx < current.length) {
+      timeout = setTimeout(() => setCharIdx(c => c + 1), speed);
+    } else if (!deleting && charIdx === current.length) {
+      timeout = setTimeout(() => setDeleting(true), pause);
+    } else if (deleting && charIdx > 0) {
+      timeout = setTimeout(() => setCharIdx(c => c - 1), speed / 2);
+    } else {
+      setDeleting(false);
+      setPhraseIdx(i => (i + 1) % phrases.length);
+    }
+    setDisplayed(current.slice(0, charIdx));
+    return () => clearTimeout(timeout);
+  }, [charIdx, deleting, phraseIdx, phrases, speed, pause]);
+
+  return displayed;
+}
+
 export default function Intro() {
+  const typed = useTypewriter(PHRASES);
   return (
     <div className="intro-page">
       <Particles count={100} />
@@ -19,7 +49,10 @@ export default function Intro() {
 
       {/* Hero */}
       <section className="hero intro-hero">
-        <h1>Your Safe Space.<br />Your Story.</h1>
+        <h1>
+          Your Safe Space.<br />
+          <span className="typewriter-line">{typed}<span className="type-cursor">|</span></span>
+        </h1>
         <p>
           A sanctuary where you can speak freely, find support, and connect with a
           global community of understanding souls — completely anonymous.
