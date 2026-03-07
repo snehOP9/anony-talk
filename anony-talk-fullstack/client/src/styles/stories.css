@@ -1,0 +1,35 @@
+/* ===== Stories ===== */
+.stories-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.story-card h3 {
+  font-size: 1.2rem;
+  color: var(--neon-cyan);
+  margin-bottom: 12px;
+}
+
+.story-card p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.story-lesson {
+  padding: 12px 16px;
+  background: rgba(0, 240, 255, 0.05);
+  border-left: 3px solid var(--neon-cyan);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.poem-text {
+  font-family: 'Poppins', sans-serif;
+  white-space: pre-wrap;
+  color: var(--text-secondary);
+  line-height: 2;
+  font-size: 1.05rem;
+}

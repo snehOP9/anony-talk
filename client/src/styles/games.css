@@ -1,0 +1,158 @@
+/* ===== Games ===== */
+.game-card {
+  text-align: center;
+  cursor: pointer;
+}
+
+.game-emoji {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.game-card h3 {
+  color: var(--neon-cyan);
+  margin-bottom: 8px;
+}
+
+.game-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.active-game {
+  padding: 32px;
+  position: relative;
+}
+
+.back-btn {
+  margin-bottom: 24px;
+}
+
+.game-content {
+  text-align: center;
+}
+
+.game-content h3 {
+  font-size: 1.5rem;
+  color: var(--neon-cyan);
+  margin-bottom: 8px;
+}
+
+.game-content > p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.game-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Breathing */
+.breathing-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,240,255,0.3), rgba(168,85,247,0.2));
+  border: 2px solid var(--neon-cyan);
+  box-shadow: 0 0 40px rgba(0,240,255,0.2);
+  margin: 24px auto;
+  transition: transform 0.3s;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.speed-control input[type="range"] {
+  accent-color: var(--neon-cyan);
+}
+
+/* Memory */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+}
+
+.memory-card:hover {
+  border-color: var(--neon-cyan);
+}
+
+.memory-card.flipped {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--neon-cyan);
+}
+
+/* Color Canvas */
+.color-canvas {
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  cursor: crosshair;
+  display: block;
+  margin: 0 auto;
+}
+
+.canvas-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.canvas-controls input[type="color"] {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+}
+
+.canvas-controls input[type="range"] {
+  accent-color: var(--neon-cyan);
+}
+
+/* Focus Timer */
+.timer-modes {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.timer-display {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+  margin-bottom: 8px;
+}

@@ -1,0 +1,110 @@
+/* ===== Profile Pages ===== */
+.edit-profile-container,
+.profile-view-container {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+.avatar-preview {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.profile-avatar-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--neon-cyan);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+  margin-bottom: 12px;
+}
+
+.preview-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--neon-cyan);
+}
+
+.avatar-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.avatar-option {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--glass-border);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.avatar-option:hover {
+  border-color: var(--neon-cyan);
+  transform: scale(1.1);
+}
+
+.avatar-option.selected {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+.ghost-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.ghost-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--neon-cyan);
+}
+
+/* View Profile */
+.profile-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.profile-header h2 {
+  font-size: 1.8rem;
+  margin-top: 12px;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.profile-row .label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.profile-row .value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Theme Variants */
+.theme-cyberpunk { --neon-cyan: #ff00c8; }
+.theme-midnight { --neon-cyan: #a855f7; background: linear-gradient(135deg, #0a0a2e, #1a0a3e); }
+.theme-pastel { --neon-cyan: #ffb6c1; background: linear-gradient(135deg, #2d1f3d, #1a1a2e); }
+
+.ghost-mode {
+  opacity: 0.85;
+}
