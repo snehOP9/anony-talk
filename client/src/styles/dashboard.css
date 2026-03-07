@@ -1,63 +1,91 @@
-/* ===== Dashboard ===== */
+﻿/* ===== Dashboard -- Ultra UI ===== */
 .dashboard-welcome {
   text-align: center;
-  padding: 40px 0 32px;
+  padding: 48px 0 36px;
 }
 
 .dashboard-welcome h1 {
-  font-size: 2.8rem;
-  margin-bottom: 8px;
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  letter-spacing: -0.03em;
 }
 
 .dashboard-welcome p {
   color: var(--text-secondary);
   font-size: 1.1rem;
+  line-height: 1.6;
 }
 
 .dashboard-section {
-  margin-bottom: 48px;
+  margin-bottom: 56px;
 }
 
 /* Mood Test */
 .mood-test-card {
   text-align: center;
-  padding: 40px;
+  padding: 48px 32px;
+  background: linear-gradient(145deg, rgba(0, 240, 255, 0.03), rgba(168, 85, 247, 0.02));
+  border-color: rgba(0, 240, 255, 0.1);
 }
 
 .mood-question h3 {
-  font-size: 1.4rem;
-  margin-bottom: 24px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 28px;
+  letter-spacing: -0.01em;
 }
 
 .mood-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
 }
 
 .mood-option {
-  padding: 12px 24px;
+  padding: 14px 24px;
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--glass-bg);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--transition-spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.mood-option::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.12), rgba(168, 85, 247, 0.08));
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 
 .mood-option:hover {
-  border-color: var(--neon-cyan);
-  background: rgba(0, 240, 255, 0.1);
-  transform: translateY(-2px);
+  border-color: rgba(0, 240, 255, 0.4);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 240, 255, 0.12);
+}
+
+.mood-option:hover::before { opacity: 1; }
+
+.mood-option:active {
+  transform: translateY(-2px) scale(0.98);
 }
 
 .mood-progress {
-  margin-top: 16px;
+  margin-top: 20px;
   color: var(--text-muted);
   font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .mood-result {
@@ -65,34 +93,108 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  animation: pageIn 0.6s ease both;
 }
 
 .result-emoji {
-  font-size: 4rem;
+  font-size: 4.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .result-text {
   color: var(--text-secondary);
   font-size: 1.1rem;
   max-width: 500px;
-  line-height: 1.7;
+  line-height: 1.8;
 }
 
 /* Affirmation */
 .affirmation-card {
   text-align: center;
-  padding: 48px 32px;
+  padding: 56px 36px;
+  background: linear-gradient(145deg, rgba(168, 85, 247, 0.04), rgba(255, 0, 200, 0.02));
+  border-color: rgba(168, 85, 247, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.affirmation-card::before {
+  content: '\2756';
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  font-size: 1.5rem;
+  opacity: 0.15;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.2); }
 }
 
 .affirmation-text {
   font-size: 1.5rem;
+  font-weight: 500;
   font-style: italic;
-  color: var(--neon-cyan);
-  line-height: 1.6;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.7;
   margin-bottom: 12px;
 }
 
 .affirmation-author {
   color: var(--text-muted);
   font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Quick Actions Row */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 48px;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-spring);
+  text-decoration: none;
+}
+
+.quick-action-btn:hover {
+  border-color: rgba(0, 240, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: var(--neon-cyan);
+}
+
+.quick-action-btn .qa-icon {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-welcome h1 { font-size: 2rem; }
+  .mood-test-card { padding: 32px 20px; }
+  .affirmation-card { padding: 36px 20px; }
+  .affirmation-text { font-size: 1.2rem; }
 }

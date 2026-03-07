@@ -1,4 +1,4 @@
-/* ===== Bot / AI Chat Page ===== */
+﻿/* ===== Bot / AI Chat Page ===== */
 .bot-page {
   display: flex;
   flex-direction: column;
@@ -23,12 +23,39 @@
   font-size: 0.9rem;
 }
 
-.bot-header-controls {
+/* Language Selector */
+.lang-selector {
   display: flex;
-  gap: 10px;
-  justify-content: center;
   flex-wrap: wrap;
-  margin-top: 10px;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.lang-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.06);
+}
+
+.lang-btn.active {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(168, 85, 247, 0.1));
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
 }
 
 .chat-container {
@@ -138,7 +165,7 @@
   cursor: not-allowed;
 }
 
-/* ── Language Picker Screen ── */
+/* -- Language Picker Screen -- */
 .lang-pick-page {
   display: flex;
   align-items: center;
@@ -236,7 +263,7 @@
   margin-top: 4px;
 }
 
-/* ── Language Change Button (in chat header) ── */
+/* -- Language Change Button (in chat header) -- */
 .lang-change-btn {
   background: rgba(0, 240, 255, 0.08);
   border: 1px solid rgba(0, 240, 255, 0.25);
@@ -253,13 +280,21 @@
   border-color: var(--neon-cyan);
 }
 
+.bot-header-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
 @media (max-width: 500px) {
   .lang-pick-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* ── Voice Toggle Button ── */
+/* -- Voice Toggle Button -- */
 .voice-toggle-btn {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(168, 85, 247, 0.25);
@@ -284,7 +319,7 @@
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
 }
 
-/* ── Mic Button ── */
+/* -- Mic Button -- */
 .mic-btn {
   width: 48px;
   height: 48px;
@@ -310,7 +345,6 @@
 .mic-btn.recording {
   background: rgba(239, 68, 68, 0.2);
   border-color: #ef4444;
-  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
   animation: micPulse 1s infinite;
 }
 
@@ -325,13 +359,12 @@
   100% { box-shadow: 0 0 0 0   rgba(239, 68, 68, 0);   }
 }
 
-/* Listening state on input field */
 .input-field.listening {
   border-color: #ef4444 !important;
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
 }
 
-/* ── Per-bubble TTS speak button ── */
+/* -- Per-bubble TTS speak button -- */
 .bubble-content {
   position: relative;
 }
@@ -356,7 +389,7 @@
   opacity: 1 !important;
 }
 
-/* ── Voice Mode Entry Button (in chat header) ── */
+/* -- Voice Mode Entry Button -- */
 .voice-mode-entry-btn {
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(0, 240, 255, 0.12));
   border: 1px solid rgba(168, 85, 247, 0.45);
@@ -376,7 +409,7 @@
   transform: translateY(-1px);
 }
 
-/* ── Voice Mode Full-Screen Page ── */
+/* -- Voice Mode Full-Screen Page -- */
 .voice-mode-page {
   display: flex;
   align-items: center;
@@ -417,7 +450,6 @@
   border-radius: 20px;
 }
 
-/* ── Conversation snippets inside voice mode ── */
 .voice-exchange {
   width: 100%;
   display: flex;
@@ -467,7 +499,7 @@
   font-style: italic;
 }
 
-/* ── Big Mic Button ── */
+/* -- Big Mic Button -- */
 .voice-mic-area {
   display: flex;
   flex-direction: column;
@@ -500,7 +532,6 @@
 .voice-big-mic.listening {
   background: rgba(239, 68, 68, 0.18);
   border-color: #ef4444;
-  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
   animation: micPulse 1s infinite;
 }
 
@@ -523,7 +554,7 @@
   letter-spacing: 0.01em;
 }
 
-/* ── Exit Voice Mode ── */
+/* -- Exit Voice Mode -- */
 .voice-exit-btn {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.14);
