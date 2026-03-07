@@ -1,0 +1,44 @@
+/* ===== Wellness pages (Anxiety, Depression, Relationship) ===== */
+.wellness-content {
+  min-height: 300px;
+}
+
+.story-lesson {
+  padding: 12px 16px;
+  background: rgba(0, 240, 255, 0.05);
+  border-left: 3px solid var(--neon-cyan);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 12px;
+}
+
+/* Relationship-specific */
+.relationship-progress {
+  margin-bottom: 16px;
+}
+
+.relationship-progress .label-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.relationship-progress .label-row span:first-child {
+  color: var(--text-muted);
+}
+
+.relationship-progress .label-row span:last-child {
+  color: var(--neon-cyan);
+  font-weight: 600;
+}
+
+.bonding-card {
+  text-align: center;
+}
+
+.bonding-card .bonding-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}

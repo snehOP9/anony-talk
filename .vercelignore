@@ -1,0 +1,5 @@
+anony-talk-fullstack/
+node_modules/
+server/anony-talk.db
+server/anony-talk.db-shm
+server/anony-talk.db-wal

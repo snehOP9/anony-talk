@@ -1,0 +1,54 @@
+/* ===== Explore Page ===== */
+.explore-grid {
+  margin-bottom: 60px;
+}
+
+.explore-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.explore-card:hover {
+  transform: translateY(-6px);
+}
+
+.explore-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 4px;
+}
+
+.explore-card h3 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.explore-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.explore-arrow {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  font-size: 1.5rem;
+  color: var(--neon-cyan);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.explore-card:hover .explore-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.explore-stats {
+  margin-bottom: 48px;
+}

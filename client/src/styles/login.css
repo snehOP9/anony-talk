@@ -1,0 +1,82 @@
+/* ===== Login Page ===== */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 440px;
+  padding: 48px 36px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.login-header {
+  margin-bottom: 32px;
+}
+
+.lock-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.login-header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: var(--neon-cyan);
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.login-container .form-group {
+  text-align: left;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.05rem;
+  margin-top: 8px;
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status-message {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+
+.form-toggle {
+  margin-top: 24px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: var(--neon-cyan);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 0.9rem;
+  margin-left: 4px;
+}
+
+.toggle-btn:hover {
+  text-decoration: underline;
+}

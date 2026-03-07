@@ -1,0 +1,20 @@
+{
+  "name": "anony-talk-server",
+  "version": "1.0.0",
+  "description": "AnonyTalk Express Backend",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.1.2",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.4",
+    "uuid": "^9.0.1"
+  }
+}

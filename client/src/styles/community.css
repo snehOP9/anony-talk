@@ -1,0 +1,56 @@
+/* ===== Community ===== */
+.community-input textarea {
+  min-height: 100px;
+}
+
+.category-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.post-author {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  margin-right: 12px;
+}
+
+.post-time {
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+.upvote-btn {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.upvote-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.post-content {
+  line-height: 1.6;
+}
