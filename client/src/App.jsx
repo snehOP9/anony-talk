@@ -31,13 +31,13 @@ export default function App() {
   return (
     <Routes>
 
-      {/* Public routes — AuthPage is the landing page */}
-      <Route path="/"      element={<AuthPage />} />
+      {/* Public routes */}
+      <Route path="/"      element={<Intro />} />
+      <Route path="/intro" element={<Intro />} />
       <Route path="/auth"  element={<AuthPage />} />
       <Route path="/login" element={<AuthPage />} />
 
       {/* All pages below are protected — login required */}
-      <Route path="/intro"             element={<Protected><Intro /></Protected>} />
       <Route path="/dashboard"         element={<Protected><Dashboard /></Protected>} />
       <Route path="/profile/edit"      element={<Protected><EditProfile /></Protected>} />
       <Route path="/profile"           element={<Protected><ViewProfile /></Protected>} />

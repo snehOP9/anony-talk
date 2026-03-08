@@ -1,0 +1,625 @@
+/* ===== Teen Support Page ===== */
+
+.ts-page {
+  min-height: 100vh;
+  background: #080c14;
+  padding-bottom: 80px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient background orbs */
+.ts-page::before,
+.ts-page::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.ts-page::before {
+  width: 600px; height: 600px;
+  top: -200px; left: -200px;
+  background: radial-gradient(circle, rgba(217,70,239,0.08) 0%, transparent 70%);
+}
+.ts-page::after {
+  width: 500px; height: 500px;
+  bottom: 0; right: -150px;
+  background: radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%);
+}
+
+.ts-content {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 2-column grid for pairs of cards */
+.ts-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* ── Hero ── */
+.ts-hero {
+  border-radius: 28px;
+  background: linear-gradient(135deg, #be1bdb, #6366f1 50%, #0ea5e9);
+  padding: 48px 44px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer layer */
+.ts-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  border-radius: 28px;
+}
+
+/* Decorative circle */
+.ts-hero::after {
+  content: '';
+  position: absolute;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  top: -80px; right: -60px;
+}
+
+.ts-hero-inner { position: relative; z-index: 1; }
+
+.ts-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 16px;
+}
+
+.ts-hero h1 {
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+
+.ts-hero p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.7;
+  max-width: 520px;
+}
+
+.ts-hero-stats {
+  display: flex;
+  gap: 28px;
+  margin-top: 28px;
+}
+
+.ts-hero-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.ts-hero-stat-val {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.ts-hero-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+}
+
+/* ── Card ── */
+.ts-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 24px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ts-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.14);
+}
+
+/* Colored top accent line per card type */
+.ts-card-mood  { border-top: 2px solid #f59e0b; }
+.ts-card-calm  { border-top: 2px solid #6366f1; }
+.ts-card-chat  { border-top: 2px solid #0ea5e9; }
+.ts-card-journal { border-top: 2px solid #10b981; }
+.ts-card-confession { border-top: 2px solid #ec4899; }
+.ts-card-stories { border-top: 2px solid #a78bfa; }
+.ts-card-kind  { border-top: 2px solid #67e8f9; }
+
+.ts-card-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ts-card-title-icon {
+  font-size: 1.1rem;
+}
+
+/* ── Mood Tracker ── */
+.ts-mood-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ts-mood-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #fff;
+  font-size: 1.8rem;
+}
+
+.ts-mood-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+}
+
+.ts-mood-btn.active {
+  border-color: #f59e0b;
+  background: rgba(245,158,11,0.12);
+  box-shadow: 0 0 18px rgba(245,158,11,0.2);
+}
+
+.ts-mood-label {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.65);
+  font-weight: 600;
+}
+
+.ts-mood-btn.active .ts-mood-label { color: #fcd34d; }
+
+.ts-mood-status {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
+}
+
+.ts-mood-message {
+  font-size: 0.9rem;
+  color: #fde68a;
+  line-height: 1.6;
+  padding: 12px 16px;
+  background: rgba(245,158,11,0.08);
+  border-radius: 12px;
+  border-left: 3px solid #f59e0b;
+  animation: fadeIn 0.35s ease;
+}
+
+/* ── Calm Tools ── */
+.ts-calm-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ts-calm-tool {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.06));
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 14px;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+}
+
+.ts-calm-tool:hover {
+  border-color: rgba(99,102,241,0.5);
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.12));
+  transform: translateX(4px);
+}
+
+.ts-calm-icon {
+  font-size: 1.9rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(139,92,246,0.4));
+}
+
+.ts-calm-tool h3 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #c4b5fd;
+  margin-bottom: 5px;
+}
+
+.ts-calm-tool p {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+}
+
+/* ── Connect Screen ── */
+.ts-connect-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px 16px;
+  gap: 14px;
+}
+
+.ts-connect-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 0 28px rgba(14,165,233,0.35);
+}
+
+.ts-connect-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.ts-connect-desc {
+  font-size: 0.87rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.65;
+  max-width: 360px;
+}
+
+.ts-connect-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ts-connect-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: rgba(14,165,233,0.1);
+  border: 1px solid rgba(14,165,233,0.25);
+  color: #7dd3fc;
+}
+
+.ts-connect-btn {
+  margin-top: 4px;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  border: none;
+  border-radius: 14px;
+  padding: 13px 32px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+  box-shadow: 0 6px 22px rgba(14,165,233,0.35);
+  letter-spacing: 0.01em;
+}
+
+.ts-connect-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+/* Connected banner (auto-hides) */
+.ts-connected-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 0.84rem;
+  color: #86efac;
+  margin-bottom: 14px;
+  animation: fadeIn 0.4s ease;
+  font-weight: 600;
+}
+
+.ts-connected-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+/* Online status bar */
+.ts-chat-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.ts-online-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse-green 2s infinite;
+}
+
+/* ── Chat Messages ── */
+.ts-chat-messages {
+  height: 280px;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
+}
+
+.ts-msg {
+  max-width: 82%;
+  padding: 10px 15px;
+  border-radius: 16px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.ts-msg.assistant {
+  align-self: flex-start;
+  background: rgba(14,165,233,0.15);
+  color: #bae6fd;
+  border-bottom-left-radius: 4px;
+  border: 1px solid rgba(14,165,233,0.2);
+}
+
+.ts-msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, rgba(99,102,241,0.6), rgba(217,70,239,0.5));
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.ts-chat-form {
+  display: flex;
+  gap: 10px;
+}
+
+.ts-chat-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 11px 16px;
+  color: #fff;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.ts-chat-input::placeholder { color: rgba(255,255,255,0.35); }
+.ts-chat-input:focus { border-color: #38bdf8; background: rgba(255,255,255,0.08); }
+
+.ts-chat-send {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  border-radius: 12px;
+  padding: 11px 20px;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+  white-space: nowrap;
+}
+
+.ts-chat-send:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
+.ts-chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Journal & Confession ── */
+.ts-desc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.ts-journal-textarea {
+  width: 100%;
+  min-height: 130px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: #fff;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.ts-journal-textarea::placeholder { color: rgba(255,255,255,0.3); }
+.ts-journal-textarea:focus { border-color: #67e8f9; }
+
+.ts-journal-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.ts-save-btn {
+  background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+  border: none; border-radius: 12px;
+  padding: 10px 22px;
+  color: #fff;
+  font-size: 0.88rem; font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+}
+.ts-save-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.ts-post-btn {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  border: none; border-radius: 12px;
+  padding: 10px 22px;
+  color: #fff;
+  font-size: 0.88rem; font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+}
+.ts-post-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.ts-status-msg {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── Stories ── */
+.ts-stories-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ts-story {
+  padding: 18px;
+  background: rgba(167,139,250,0.06);
+  border: 1px solid rgba(167,139,250,0.15);
+  border-radius: 16px;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  position: relative;
+}
+
+.ts-story::before {
+  content: '"';
+  position: absolute;
+  top: 10px; right: 14px;
+  font-size: 2.5rem;
+  color: rgba(167,139,250,0.2);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.ts-story:hover {
+  border-color: rgba(167,139,250,0.4);
+  background: rgba(167,139,250,0.1);
+  transform: translateY(-2px);
+}
+
+.ts-story h3 {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #c4b5fd;
+  margin-bottom: 8px;
+}
+
+.ts-story p {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.65;
+}
+
+/* ── Kind Messages Wall ── */
+.ts-kind-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.ts-kind-msg {
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ts-kind-msg:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+.ts-kind-msg:nth-child(1) { background: rgba(103,232,249,0.12); border: 1px solid rgba(103,232,249,0.2); color: #a5f3fc; }
+.ts-kind-msg:nth-child(2) { background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.2); color: #ddd6fe; }
+.ts-kind-msg:nth-child(3) { background: rgba(244,114,182,0.12); border: 1px solid rgba(244,114,182,0.2); color: #fbcfe8; }
+.ts-kind-msg:nth-child(4) { background: rgba(52,211,153,0.12);  border: 1px solid rgba(52,211,153,0.2);  color: #a7f3d0; }
+.ts-kind-msg:nth-child(5) { background: rgba(251,191,36,0.12);  border: 1px solid rgba(251,191,36,0.2);  color: #fde68a; }
+.ts-kind-msg:nth-child(6) { background: rgba(14,165,233,0.12);  border: 1px solid rgba(14,165,233,0.2);  color: #bae6fd; }
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+  50%       { opacity: 0.6; box-shadow: 0 0 0 4px rgba(34,197,94,0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .ts-grid-2 { grid-template-columns: 1fr; }
+  .ts-hero { padding: 32px 24px; }
+  .ts-hero h1 { font-size: 1.9rem; }
+  .ts-hero-stats { gap: 18px; }
+  .ts-mood-grid { grid-template-columns: repeat(3, 1fr); }
+  .ts-stories-grid { grid-template-columns: 1fr; }
+  .ts-kind-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 420px) {
+  .ts-hero h1 { font-size: 1.6rem; }
+  .ts-kind-grid { grid-template-columns: 1fr; }
+}

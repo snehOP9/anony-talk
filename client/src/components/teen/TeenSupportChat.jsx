@@ -1,80 +1,95 @@
-import { useMemo, useRef, useState } from "react";
-import TeenCard from "./TeenCard";
+import { useState, useRef, useMemo, useEffect } from 'react';
+import TeenCard from './TeenCard';
 
 const replies = [
-  "I'm here to listen. Tell me more about what you're feeling.",
-  "Thank you for sharing that. You are safe here.",
-  "That sounds really hard. We can take this one step at a time.",
-  "You matter, and your feelings are valid.",
+  "I hear you. Take your time — this is a safe space.",
+  "Thank you for reaching out. You are not alone in this.",
+  "That sounds really difficult. Let's work through this together.",
+  "Your feelings are completely valid. Can you tell me more?",
+  "I'm here with you. We'll take this one step at a time.",
+  "It takes courage to talk about this. I'm listening.",
 ];
 
 export default function TeenSupportChat() {
-  const [messages, setMessages] = useState([
-    { id: 1, role: "assistant", text: "Hi, this is a safe anonymous space. You can talk freely here." },
-  ]);
-  const [input, setInput] = useState("");
-  const messagesEndRef = useRef(null);
+  const [connected, setConnected] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const endRef = useRef(null);
   const canSend = useMemo(() => input.trim().length > 0, [input]);
 
-  const scrollToBottom = () => {
-    requestAnimationFrame(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
+  const handleConnect = () => {
+    setConnected(true);
+    setShowBanner(true);
+    setMessages([
+      { id: 1, role: 'assistant', text: "Hello, I'm here to support you. Everything you share here is private and confidential. How are you feeling today?" },
+    ]);
+    setTimeout(() => setShowBanner(false), 4000);
   };
 
-  const handleSend = (event) => {
-    event.preventDefault();
+  const handleSend = (e) => {
+    e.preventDefault();
     if (!canSend) return;
-
-    const userText = input.trim();
     const next = [
-      ...messages, 
-      { id: Date.now(), role: "user", text: userText },
-      { id: Date.now() + 1, role: "assistant", text: replies[Math.floor(Math.random() * replies.length)] },
+      ...messages,
+      { id: Date.now(),     role: 'user',      text: input.trim() },
+      { id: Date.now() + 1, role: 'assistant', text: replies[Math.floor(Math.random() * replies.length)] },
     ];
     setMessages(next);
-    setInput("");
-    scrollToBottom();
+    setInput('');
+    requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
   };
 
+  useEffect(() => {
+    if (connected) requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
+  }, [messages, connected]);
+
   return (
-    <TeenCard title="Anonymous Chat Support">
-      <p className="mb-3 text-sm text-white/80">Talk with a supportive agent in a judgment-free space.</p>
-      <div className="h-[320px] overflow-y-auto rounded-2xl border border-white/20 bg-slate-900/30 p-4 md:h-[400px]">
-        <div className="space-y-3">
-          {messages.map((message) => (
-            <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm shadow-md ${
-                  message.role === "user"
-                    ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white"
-                    : "bg-sky-100/90 text-slate-800"
-                }`}
-              >
-                {message.text}
-              </div>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
+    <TeenCard title="Help Chat" icon="💬" accent="ts-card-chat">
+      {!connected ? (
+        <div className="ts-connect-screen">
+          <div className="ts-connect-avatar">🩺</div>
+          <p className="ts-connect-title">Talk to a Care Specialist</p>
+          <p className="ts-connect-desc">
+            Connect instantly with a trained care specialist. Your conversation is completely private — no names, no records.
+          </p>
+          <div className="ts-connect-pills">
+            <span className="ts-connect-pill">🔒 Private</span>
+            <span className="ts-connect-pill">👤 Anonymous</span>
+            <span className="ts-connect-pill">⚡ Instant</span>
+          </div>
+          <button className="ts-connect-btn" onClick={handleConnect}>Connect Now →</button>
         </div>
-      </div>
-      <form onSubmit={handleSend} className="mt-4 flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder="Share what's on your mind… this is your safe space."
-          className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white placeholder:text-white/60 focus:border-cyan-300 focus:outline-none"
-        />
-        <button
-          type="submit" 
-          disabled={!canSend}
-          aria-label="Send message"
-          className="rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <span aria-hidden="true">➤</span>
-        </button>
-      </form>
+      ) : (
+        <>
+          {showBanner && (
+            <div className="ts-connected-banner">
+              <span className="ts-connected-dot" />
+              Care specialist connected — you are in a safe space
+            </div>
+          )}
+          <div className="ts-chat-status">
+            <span className="ts-online-dot" /> Care specialist is online
+          </div>
+          <div className="ts-chat-messages">
+            {messages.map((msg) => (
+              <div key={msg.id} className={'ts-msg ' + msg.role}>{msg.text}</div>
+            ))}
+            <div ref={endRef} />
+          </div>
+          <form className="ts-chat-form" onSubmit={handleSend}>
+            <input
+              type="text"
+              className="ts-chat-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message…"
+              autoFocus
+            />
+            <button type="submit" className="ts-chat-send" disabled={!canSend}>Send ➤</button>
+          </form>
+        </>
+      )}
     </TeenCard>
   );
 }
