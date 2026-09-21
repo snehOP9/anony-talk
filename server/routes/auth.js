@@ -10,6 +10,10 @@ function ageToGroup(age) {
   return null;
 }
 
+function normalizeEmail(email) {
+  return email.trim().toLowerCase();
+}
+
 function createSession(userId, ghostToken = null) {
   const token = uuidv4();
   db.prepare(
@@ -29,12 +33,13 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ message: 'Password must be at least 6 characters.' });
   }
 
+  const normalizedEmail = normalizeEmail(email);
   const ageNum = parseInt(age);
   if (isNaN(ageNum) || ageNum < 12 || ageNum > 25) {
     return res.status(400).json({ message: 'Age must be between 12 and 25.' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(normalizedEmail);
   if (existing) {
     return res.status(409).json({ message: 'An account with this email already exists.' });
   }
@@ -45,14 +50,14 @@ router.post('/register', (req, res) => {
 
   db.prepare(
     'INSERT INTO users (id, username, email, password_hash, age, age_group) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(id, username, email, password_hash, ageNum, age_group);
+  ).run(id, username, normalizedEmail, password_hash, ageNum, age_group);
 
   const token = createSession(id);
 
   res.json({
     message: 'Welcome to AnonyTalk! Your safe space is ready.',
     token,
-    user: { id, username, email, age: ageNum, ageGroup: age_group },
+    user: { id, username, email: normalizedEmail, age: ageNum, ageGroup: age_group },
   });
 });
 
@@ -64,7 +69,8 @@ router.post('/login', (req, res) => {
     return res.status(400).json({ message: 'Email and password are required.' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  const normalizedEmail = normalizeEmail(email);
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail);
   if (!user || !user.password_hash || !bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ message: 'Invalid email or password.' });
   }
