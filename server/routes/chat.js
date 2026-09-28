@@ -3,6 +3,10 @@ const router = express.Router();
 
 const GEMINI_MODEL = 'gemini-2.5-flash-lite';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const configuredTimeoutMs = Number.parseInt(process.env.GEMINI_TIMEOUT_MS || '', 10);
+const GEMINI_TIMEOUT_MS = Number.isFinite(configuredTimeoutMs) && configuredTimeoutMs > 0
+  ? configuredTimeoutMs
+  : 10000;
 
 function buildSystemPrompt(language) {
   return `You are a compassionate, non-judgmental AI mental health companion for AnonyTalk, an anonymous support platform primarily used in India. Your role is to listen, validate feelings, and offer supportive guidance.
@@ -134,6 +138,7 @@ router.post('/', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
     });
 
     if (!geminiRes.ok) {
