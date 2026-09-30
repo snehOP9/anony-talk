@@ -41,7 +41,7 @@ Anony Talk changes this by providing an anonymous environment where users can op
 ## 📦 Installation & Setup
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js 20 or newer (recommended for the current Vite toolchain)
 - npm or yarn package manager
 - Git
 
