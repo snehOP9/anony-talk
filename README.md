@@ -49,7 +49,6 @@ Anony Talk changes this by providing an anonymous environment where users can op
 ```bash
 git clone https://github.com/snehOP9/anony-talk.git
 cd anony-talk
-cd anony-talk-fullstack
 ```
 
 ---
