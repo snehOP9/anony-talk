@@ -10,8 +10,23 @@ const chatRoutes = require('./routes/chat');
 
 const app = express();
 
-// Allow local dev and same-origin Vercel API requests.
-app.use(cors({ origin: true, credentials: true }));
+const allowedOrigins = new Set(
+  (process.env.CLIENT_URL || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
+
+// Allow non-browser/same-origin requests and explicitly configured browser origins.
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
