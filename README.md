@@ -476,3 +476,11 @@ For support or questions, feel free to open an issue on GitHub.
 ---
 
 **Note**: This project is under active development. Features and setup instructions may be updated.
+
+## AI chat upstream usage protection
+
+The chat endpoint limits upstream Gemini requests to **20 per client IP per 60 seconds** to reduce accidental loops and provider charges. Once the quota is reached, the user still receives the existing built-in support response with `source: "fallback"` and `rateLimited: true` instead of an outage. This is important for a mental-health support interface: exceeding the upstream API quota must not block the basic crisis and wellbeing responses. The route also rejects messages over 4,000 characters before dispatching upstream.
+
+The limiter is memory-backed **per API process**. Deployments with multiple Vercel/serverless instances must use a shared gateway/Redis quota for consistent organization-wide billing protection; never treat this as a guaranteed provider spend limit. IP-based policies can group users behind a shared NAT, so the local fallback remains available and no identifying data is persisted.
+
+Run `cd server && npm test` to verify per-client quotas, window reset, and bounded tracking state. The CI backend job runs the same tests. No provider credentials are required for unit tests.
