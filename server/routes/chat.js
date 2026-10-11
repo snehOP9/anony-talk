@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { createUpstreamUsageLimiter } = require('../lib/upstreamUsageLimiter');
+const allowUpstreamCall = createUpstreamUsageLimiter();
 
 const GEMINI_MODEL = 'gemini-2.5-flash-lite';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -105,13 +107,25 @@ function getFallbackResponse(message) {
 router.post('/', async (req, res) => {
   const { message, language = 'English' } = req.body;
 
-  if (!message || typeof message !== 'string') {
+  if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'Message is required.' });
+  }
+
+  if (message.length > 4_000) {
+    return res.status(413).json({ error: 'Message is too long. Please use at most 4,000 characters.' });
   }
 
   if (!GEMINI_API_KEY) {
     const response = getFallbackResponse(message);
     return res.json({ response, source: 'fallback' });
+  }
+
+  if (!allowUpstreamCall(req.ip || req.socket.remoteAddress || 'unknown')) {
+    return res.json({
+      response: getFallbackResponse(message),
+      source: 'fallback',
+      rateLimited: true,
+    });
   }
 
   try {
