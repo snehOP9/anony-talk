@@ -25,4 +25,11 @@ app.use('/api/profiles', profileRoutes);
 app.use('/api/mood', moodRoutes);
 app.use('/api/chat', chatRoutes);
 
+app.use((error, _request, response, next) => {
+  if (error?.type === 'entity.too.large') {
+    return response.status(413).json({ error: 'Request body too large' });
+  }
+  return next(error);
+});
+
 module.exports = app;
