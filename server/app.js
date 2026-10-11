@@ -12,7 +12,8 @@ const app = express();
 
 // Allow local dev and same-origin Vercel API requests.
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
+const jsonBodyLimit = process.env.JSON_BODY_LIMIT || '32kb';
+app.use(express.json({ limit: jsonBodyLimit }));
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true });
