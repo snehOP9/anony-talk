@@ -151,8 +151,7 @@ router.post('/', async (req, res) => {
     });
 
     if (!geminiRes.ok) {
-      const err = await geminiRes.json().catch(() => ({}));
-      console.error('Gemini API error:', err);
+      console.error('Gemini upstream request returned HTTP status', geminiRes.status);
       return res.json({ response: getFallbackResponse(message), source: 'fallback' });
     }
 
@@ -165,7 +164,7 @@ router.post('/', async (req, res) => {
 
     res.json({ response: text.trim(), source: 'gemini' });
   } catch (err) {
-    console.error('Chat route error:', err);
+    console.error('Gemini upstream request failed', { type: err?.name || 'UnknownError' });
     res.json({ response: getFallbackResponse(message), source: 'fallback' });
   }
 });
