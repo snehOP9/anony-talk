@@ -4,6 +4,10 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const router = express.Router();
 
+function normalizeEmail(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
 function ageToGroup(age) {
   if (age >= 12 && age <= 19) return 'teen';
   if (age >= 20 && age <= 25) return 'young-adult';
@@ -22,7 +26,8 @@ function createSession(userId, ghostToken = null) {
 router.post('/register', (req, res) => {
   const { username, email, password, age } = req.body;
 
-  if (!username || !email || !password || age === undefined) {
+  const normalizedEmail = normalizeEmail(email);
+  if (typeof username !== 'string' || !username.trim() || !normalizedEmail || typeof password !== 'string' || !password || age === undefined) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
   if (password.length < 6) {
@@ -34,7 +39,7 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ message: 'Age must be between 12 and 25.' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+  const existing = db.prepare('SELECT id FROM users WHERE LOWER(TRIM(email)) = ?').get(normalizedEmail);
   if (existing) {
     return res.status(409).json({ message: 'An account with this email already exists.' });
   }
@@ -45,14 +50,14 @@ router.post('/register', (req, res) => {
 
   db.prepare(
     'INSERT INTO users (id, username, email, password_hash, age, age_group) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(id, username, email, password_hash, ageNum, age_group);
+  ).run(id, username, normalizedEmail, password_hash, ageNum, age_group);
 
   const token = createSession(id);
 
   res.json({
     message: 'Welcome to AnonyTalk! Your safe space is ready.',
     token,
-    user: { id, username, email, age: ageNum, ageGroup: age_group },
+    user: { id, username, email: normalizedEmail, age: ageNum, ageGroup: age_group },
   });
 });
 
@@ -60,11 +65,12 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail || typeof password !== 'string' || !password) {
     return res.status(400).json({ message: 'Email and password are required.' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  const user = db.prepare('SELECT * FROM users WHERE LOWER(TRIM(email)) = ?').get(normalizedEmail);
   if (!user || !user.password_hash || !bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ message: 'Invalid email or password.' });
   }
