@@ -41,3 +41,15 @@ test('normal JSON passes the body parser without a 413', async () => {
     assert.notEqual(response.status, 413);
   });
 });
+
+test('malformed JSON returns a stable HTTP 400 without leaking parser details', async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/health`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{"message":',
+    });
+    assert.equal(response.status, 400);
+    assert.deepEqual(await response.json(), { error: 'Malformed JSON request' });
+  });
+});

@@ -37,6 +37,9 @@ app.use((error, _request, response, next) => {
   if (error?.type === 'entity.too.large') {
     return response.status(413).json({ error: 'Request body too large' });
   }
+  if (error?.type === 'entity.parse.failed') {
+    return response.status(400).json({ error: 'Malformed JSON request' });
+  }
   return next(error);
 });
 
