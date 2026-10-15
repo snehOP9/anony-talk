@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
+const requireAuth = require('../middleware/requireAuth');
 const router = express.Router();
 
 function ageToGroup(age) {
@@ -10,11 +11,17 @@ function ageToGroup(age) {
   return null;
 }
 
-function createSession(userId, ghostToken = null) {
+function createSession(userId, ghostToken = null, ghostExpiresAt = null) {
   const token = uuidv4();
+  const now = Date.now();
+  const sessionExpiresAt = ghostToken
+    ? (ghostExpiresAt || new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString())
+    : new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const tokenExpiresAt = ghostToken ? (ghostExpiresAt || sessionExpiresAt) : null;
+
   db.prepare(
-    'INSERT INTO sessions (token, user_id, ghost_token) VALUES (?, ?, ?)'
-  ).run(token, userId, ghostToken || null);
+    'INSERT INTO sessions (token, user_id, ghost_token, expires_at, ghost_expires_at) VALUES (?, ?, ?, ?, ?)'
+  ).run(token, userId, ghostToken || null, sessionExpiresAt, tokenExpiresAt);
   return token;
 }
 
@@ -22,19 +29,23 @@ function createSession(userId, ghostToken = null) {
 router.post('/register', (req, res) => {
   const { username, email, password, age } = req.body;
 
-  if (!username || !email || !password || age === undefined) {
+  if (typeof username !== 'string' || !username.trim() ||
+      typeof email !== 'string' || !email.trim() ||
+      typeof password !== 'string' || age === undefined) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
   if (password.length < 6) {
     return res.status(400).json({ message: 'Password must be at least 6 characters.' });
   }
+  const normalizedUsername = username.trim();
+  const normalizedEmail = email.trim().toLowerCase();
 
   const ageNum = parseInt(age);
   if (isNaN(ageNum) || ageNum < 12 || ageNum > 25) {
     return res.status(400).json({ message: 'Age must be between 12 and 25.' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(normalizedEmail);
   if (existing) {
     return res.status(409).json({ message: 'An account with this email already exists.' });
   }
@@ -45,14 +56,14 @@ router.post('/register', (req, res) => {
 
   db.prepare(
     'INSERT INTO users (id, username, email, password_hash, age, age_group) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(id, username, email, password_hash, ageNum, age_group);
+  ).run(id, normalizedUsername, normalizedEmail, password_hash, ageNum, age_group);
 
   const token = createSession(id);
 
   res.json({
     message: 'Welcome to AnonyTalk! Your safe space is ready.',
     token,
-    user: { id, username, email, age: ageNum, ageGroup: age_group },
+    user: { id, username: normalizedUsername, email: normalizedEmail, age: ageNum, ageGroup: age_group },
   });
 });
 
@@ -60,11 +71,12 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  if (typeof email !== 'string' || !email.trim() || typeof password !== 'string' || !password) {
     return res.status(400).json({ message: 'Email and password are required.' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail);
   if (!user || !user.password_hash || !bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ message: 'Invalid email or password.' });
   }
@@ -76,6 +88,11 @@ router.post('/login', (req, res) => {
     token,
     user: { id: user.id, username: user.username, email: user.email, age: user.age, ageGroup: user.age_group },
   });
+});
+
+router.post('/logout', requireAuth, (req, res) => {
+  db.prepare('DELETE FROM sessions WHERE token = ?').run(req.sessionToken);
+  return res.json({ message: 'Logged out' });
 });
 
 // ── Ghost ─────────────────────────────────────────────────────────────────────
@@ -105,9 +122,11 @@ router.post('/ghost/resume', (req, res) => {
     return res.status(400).json({ message: 'Ghost token required.' });
   }
 
-  const session = db.prepare('SELECT * FROM sessions WHERE ghost_token = ?').get(ghostToken);
+  const session = db.prepare(
+    "SELECT * FROM sessions WHERE ghost_token = ? AND ghost_expires_at IS NOT NULL AND datetime(ghost_expires_at) > datetime('now') ORDER BY created_at DESC LIMIT 1"
+  ).get(ghostToken);
   if (!session) {
-    return res.status(404).json({ message: 'Ghost session not found.' });
+    return res.status(404).json({ message: 'Ghost session not found or expired.' });
   }
 
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(session.user_id);
@@ -115,7 +134,8 @@ router.post('/ghost/resume', (req, res) => {
     return res.status(404).json({ message: 'Ghost user not found.' });
   }
 
-  const token = createSession(user.id, ghostToken);
+  db.prepare('DELETE FROM sessions WHERE ghost_token = ?').run(ghostToken);
+  const token = createSession(user.id, ghostToken, session.ghost_expires_at);
 
   res.json({
     token,
