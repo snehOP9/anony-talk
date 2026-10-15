@@ -32,9 +32,10 @@ router.post('/', (req, res) => {
 
 // Upvote a post
 router.patch('/:id/upvote', (req, res) => {
-  db.prepare('UPDATE posts SET upvotes = upvotes + 1 WHERE id = ?').run(req.params.id);
+  const result = db.prepare('UPDATE posts SET upvotes = upvotes + 1 WHERE id = ?').run(req.params.id);
+  if (result.changes === 0) return res.status(404).json({ error: 'Post not found' });
+
   const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(req.params.id);
-  if (!post) return res.status(404).json({ error: 'Post not found' });
   res.json(post);
 });
 
