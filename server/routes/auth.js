@@ -3,7 +3,24 @@ const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const requireAuth = require('../middleware/requireAuth');
+const { createUpstreamUsageLimiter } = require('../lib/upstreamUsageLimiter');
 const router = express.Router();
+
+const AUTH_WINDOW_MS = 15 * 60 * 1000;
+const allowAuthAttempt = createUpstreamUsageLimiter({
+  windowMs: AUTH_WINDOW_MS,
+  maxCalls: 10,
+  maxClients: 10_000,
+});
+
+function limitAuthAttempts(req, res, next) {
+  const clientKey = req.ip || req.socket.remoteAddress || 'unknown';
+  if (!allowAuthAttempt(clientKey)) {
+    res.set('Retry-After', String(Math.ceil(AUTH_WINDOW_MS / 1000)));
+    return res.status(429).json({ message: 'Too many authentication attempts. Try again later.' });
+  }
+  return next();
+}
 
 function ageToGroup(age) {
   if (age >= 12 && age <= 19) return 'teen';
@@ -26,7 +43,7 @@ function createSession(userId, ghostToken = null, ghostExpiresAt = null) {
 }
 
 // ── Register ─────────────────────────────────────────────────────────────────
-router.post('/register', (req, res) => {
+router.post('/register', limitAuthAttempts, (req, res) => {
   const { username, email, password, age } = req.body;
 
   if (typeof username !== 'string' || !username.trim() ||
@@ -68,7 +85,7 @@ router.post('/register', (req, res) => {
 });
 
 // ── Login ─────────────────────────────────────────────────────────────────────
-router.post('/login', (req, res) => {
+router.post('/login', limitAuthAttempts, (req, res) => {
   const { email, password } = req.body;
 
   if (typeof email !== 'string' || !email.trim() || typeof password !== 'string' || !password) {
@@ -96,7 +113,7 @@ router.post('/logout', requireAuth, (req, res) => {
 });
 
 // ── Ghost ─────────────────────────────────────────────────────────────────────
-router.post('/ghost', (_req, res) => {
+router.post('/ghost', limitAuthAttempts, (_req, res) => {
   const id = uuidv4();
   const ghostToken = uuidv4();
   const username = `Ghost_${id.slice(0, 6)}`;
@@ -115,7 +132,7 @@ router.post('/ghost', (_req, res) => {
 });
 
 // ── Ghost Resume ───────────────────────────────────────────────────────────────
-router.post('/ghost/resume', (req, res) => {
+router.post('/ghost/resume', limitAuthAttempts, (req, res) => {
   const { ghostToken } = req.body;
 
   if (!ghostToken) {
