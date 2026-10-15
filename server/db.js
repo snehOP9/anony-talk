@@ -29,6 +29,8 @@ db.exec(`
     token TEXT PRIMARY KEY,
     user_id TEXT NOT NULL REFERENCES users(id),
     ghost_token TEXT,
+    expires_at TEXT,
+    ghost_expires_at TEXT,
     created_at TEXT DEFAULT (datetime('now'))
   );
 
@@ -80,15 +82,21 @@ db.exec(`
   );
 `);
 
+// Migrate existing users and sessions tables for new security fields.
+const addCol = (table, col, def) => {
+  try { db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); } catch (_) {}
+};
+addCol('sessions', 'expires_at', 'TEXT');
+addCol('sessions', 'ghost_expires_at', 'TEXT');
 // Migrate existing users table — add new columns if they don't exist yet
-const addCol = (col, def) => {
+const addUserCol = (col, def) => {
   try { db.exec(`ALTER TABLE users ADD COLUMN ${col} ${def}`); } catch (_) {}
 };
-addCol('username',      'TEXT');
-addCol('email',         'TEXT');
-addCol('password_hash', 'TEXT');
-addCol('age',           'INTEGER');
-addCol('age_group',     'TEXT');
-addCol('is_ghost',      'INTEGER DEFAULT 0');
+addUserCol('username',      'TEXT');
+addUserCol('email',         'TEXT');
+addUserCol('password_hash', 'TEXT');
+addUserCol('age',           'INTEGER');
+addUserCol('age_group',     'TEXT');
+addUserCol('is_ghost',      'INTEGER DEFAULT 0');
 
 module.exports = db;
