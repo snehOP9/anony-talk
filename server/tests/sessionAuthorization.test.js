@@ -8,7 +8,9 @@ function createUser() {
   const id = randomUUID();
   const token = randomUUID();
   db.prepare('INSERT INTO users (id, username) VALUES (?, ?)').run(id, `test_${id.slice(0, 8)}`);
-  db.prepare('INSERT INTO sessions (token, user_id) VALUES (?, ?)').run(token, id);
+  db.prepare('INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)').run(
+    token, id, new Date(Date.now() + 60_000).toISOString()
+  );
   return { id, token };
 }
 

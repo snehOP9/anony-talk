@@ -49,7 +49,6 @@ Anony Talk changes this by providing an anonymous environment where users can op
 ```bash
 git clone https://github.com/snehOP9/anony-talk.git
 cd anony-talk
-cd anony-talk-fullstack
 ```
 
 ---
@@ -83,10 +82,11 @@ OPENAI_API_KEY=your_openai_api_key_here
 DB_PATH=./anony-talk.db
 
 # JWT Secret for Authentication (Generate a random string)
-JWT_SECRET=your_super_secret_jwt_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # CORS Settings
-CLIENT_URL=http://localhost:5173
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+JSON_BODY_LIMIT=32kb
 ```
 
 ### Step 4: Start Backend Server
