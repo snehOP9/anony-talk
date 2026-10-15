@@ -1,8 +1,9 @@
 const express = require('express');
 const db = require('../db');
+const requireAuth = require('../middleware/requireAuth');
 const router = express.Router();
 
-// Get all posts (with optional category filter)
+// Public read-only feed.
 router.get('/', (req, res) => {
   const { category } = req.query;
   let posts;
@@ -11,32 +12,44 @@ router.get('/', (req, res) => {
   } else {
     posts = db.prepare('SELECT * FROM posts ORDER BY created_at DESC').all();
   }
-  res.json(posts);
+  return res.json(posts);
 });
 
-// Create a post
-router.post('/', (req, res) => {
-  const { userId, title, content, category, emoji } = req.body;
-
-  if (!content || content.trim().length < 10) {
+router.post('/', requireAuth, (req, res) => {
+  const { title, content, category, emoji } = req.body;
+  if (!content || typeof content !== 'string' || content.trim().length < 10) {
     return res.status(400).json({ error: 'Minimum 10 characters required' });
   }
 
   const result = db.prepare(
     'INSERT INTO posts (user_id, title, content, category, emoji) VALUES (?, ?, ?, ?, ?)'
-  ).run(userId || null, title || '', content.trim(), category || 'General', emoji || '💭');
+  ).run(req.user.id, title || '', content.trim(), category || 'General', emoji || '💭');
 
   const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(result.lastInsertRowid);
-  res.status(201).json(post);
+  return res.status(201).json(post);
 });
 
-// Upvote a post
-router.patch('/:id/upvote', (req, res) => {
-  const result = db.prepare('UPDATE posts SET upvotes = upvotes + 1 WHERE id = ?').run(req.params.id);
-  if (result.changes === 0) return res.status(404).json({ error: 'Post not found' });
+router.patch('/:id/upvote', requireAuth, (req, res) => {
+  const upvote = db.transaction(() => {
+    const exists = db.prepare('SELECT id FROM posts WHERE id = ?').get(req.params.id);
+    if (!exists) return { missing: true };
 
-  const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(req.params.id);
-  res.json(post);
+    const inserted = db.prepare(
+      'INSERT OR IGNORE INTO post_votes (post_id, user_id) VALUES (?, ?)'
+    ).run(req.params.id, req.user.id);
+
+    if (inserted.changes > 0) {
+      db.prepare('UPDATE posts SET upvotes = upvotes + 1 WHERE id = ?').run(req.params.id);
+    }
+
+    return {
+      post: db.prepare('SELECT * FROM posts WHERE id = ?').get(req.params.id),
+      alreadyVoted: inserted.changes === 0,
+    };
+  })();
+
+  if (upvote.missing) return res.status(404).json({ error: 'Post not found' });
+  return res.json({ ...upvote.post, alreadyVoted: upvote.alreadyVoted });
 });
 
 module.exports = router;
