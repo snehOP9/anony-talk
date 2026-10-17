@@ -81,7 +81,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 # Database Configuration (SQLite is used by default)
 DB_PATH=./anony-talk.db
 
-# JWT Secret for Authentication (Generate a random string)
+# Gemini API key for the optional AI chatbot integration
 GEMINI_API_KEY=your_gemini_api_key_here
 
 # CORS Settings
