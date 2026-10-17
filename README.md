@@ -100,7 +100,7 @@ The server will run on `http://localhost:5000`
 
 ## 🎨 Frontend Setup
 
-### Step 1: Navigate to Client Directory (from root of anony-talk-fullstack)
+### Step 1: Navigate to Client Directory (from the repository root)
 ```bash
 cd client
 ```
